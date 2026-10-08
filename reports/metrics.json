@@ -1,0 +1,49 @@
+{
+  "model_name": "Logistic Regression",
+  "threshold": 0.42,
+  "accuracy": 0.7207792207792207,
+  "precision": 0.5714285714285714,
+  "recall": 0.8148148148148148,
+  "f1": 0.6717557251908397,
+  "roc_auc": 0.8103703703703704,
+  "confusion": {
+    "tn": 67,
+    "fp": 33,
+    "fn": 10,
+    "tp": 44
+  },
+  "importance": [
+    {
+      "feature": "Glucose",
+      "value": 100.0
+    },
+    {
+      "feature": "BMI",
+      "value": 58.48827855084885
+    },
+    {
+      "feature": "Pregnancies",
+      "value": 31.318294389820345
+    },
+    {
+      "feature": "DiabetesPedigreeFunction",
+      "value": 24.974347093738213
+    },
+    {
+      "feature": "Age",
+      "value": 18.46755121113908
+    },
+    {
+      "feature": "SkinThickness",
+      "value": 5.764699098141218
+    },
+    {
+      "feature": "BloodPressure",
+      "value": 1.6960061058255766
+    },
+    {
+      "feature": "Insulin",
+      "value": 1.5868208426253059
+    }
+  ]
+}

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GlycaemiaScan | Predictive Analytics for Early Diabetes Detection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
+    <div class="dot-grid"></div>
+
+    <header class="nav glass">
+        <a class="brand" href="#top"><span class="logo-dot"></span>GlycaemiaScan</a>
+        <nav><a href="#predict">Screening</a><a href="#performance">Performance</a><a href="#insights">Insights</a>
+        </nav>
+    </header>
+
+    <main id="top">
+        <section class="wrap hero">
+            <p class="eyebrow">Statistical Machine Learning Project</p>
+            <h1>Glycaemia<span class="grad">Scan</span></h1>
+            <p class="sub">Predictive Analytics for Early Diabetes Detection</p>
+            <div class="hero-actions">
+                <a href="#predict" class="btn primary">Start screening
+                    <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                </a>
+                <a href="#performance" class="btn ghost">View model results</a>
+            </div>
+            <div class="hero-stats">
+                <div class="glass stat lift"><b>768</b><span>Patient records</span></div>
+                <div class="glass stat lift"><b>8</b><span>Clinical features</span></div>
+                <div class="glass stat lift"><b>{{ m.model_name }}</b><span>Final model</span></div>
+                <div class="glass stat lift"><b>{{ m.roc_auc|round(2) }}</b><span>Test ROC-AUC</span></div>
+            </div>
+            <a class="scroll-cue" href="#predict" aria-label="Scroll down">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M12 5v14M6 13l6 6 6-6" />
+                </svg>
+            </a>
+        </section>
+
+        <div class="marquee">
+            <div class="track">
+                <span>GLUCOSE → BMI → AGE → INSULIN → FAMILY HISTORY → BLOOD PRESSURE → </span>
+                <span>GLUCOSE → BMI → AGE → INSULIN → FAMILY HISTORY → BLOOD PRESSURE → </span>
+            </div>
+        </div>
+
+        <section class="wrap reveal" id="predict">
+            <div class="sec-head">
+                <p class="num">01 / SCREENING</p>
+                <h2>Enter patient values</h2>
+                <p>Move the sliders and run the model. Tick "Unknown" if a value wasn't measured.</p>
+            </div>
+            <div class="predict">
+                <div class="glass form-card">
+                    <div class="fields" id="fields"></div>
+                    <button class="btn primary block" id="predict-btn">Predict risk
+                        <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14M13 6l6 6-6 6" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="glass result-card">
+                    <div class="ring-wrap">
+                        <svg class="ring" viewBox="0 0 120 120">
+                            <defs>
+                                <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+                                    <stop offset="0" stop-color="#e9d5ff" />
+                                    <stop offset="0.5" stop-color="#a855f7" />
+                                    <stop offset="1" stop-color="#5b21b6" />
+                                </linearGradient>
+                            </defs>
+                            <circle cx="60" cy="60" r="52" class="track-c" />
+                            <circle cx="60" cy="60" r="52" class="bar-c" id="bar" />
+                        </svg>
+                        <div class="pct" id="pct">--</div>
+                    </div>
+                    <span class="verdict" id="verdict">Awaiting input</span>
+                    <p class="advice" id="advice">Set the values and press Predict.</p>
+                    <p class="tiny">Decision threshold {{ m.threshold }}, tuned so the model catches most diabetic
+                        cases.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="wrap reveal" id="performance">
+            <div class="sec-head">
+                <p class="num">02 / PERFORMANCE</p>
+                <h2>How well does it work?</h2>
+                <p>Final scores on a held-out test set the model never saw during training or tuning.</p>
+            </div>
+            <div class="tiles">
+                <div class="glass tile lift"><span>Accuracy</span><b class="big">{{ (m.accuracy*100)|round(1) }}%</b>
+                </div>
+                <div class="glass tile lift"><span>Precision</span><b class="big">{{ (m.precision*100)|round(1) }}%</b>
+                </div>
+                <div class="glass tile lift"><span>Recall</span><b class="big">{{ (m.recall*100)|round(1) }}%</b></div>
+                <div class="glass tile lift"><span>F1 score</span><b class="big">{{ (m.f1*100)|round(1) }}%</b></div>
+                <div class="glass tile lift"><span>ROC-AUC</span><b class="big">{{ m.roc_auc|round(3) }}</b></div>
+            </div>
+            <div class="two">
+                <div class="glass pad">
+                    <h3>Model comparison <small>5-fold cross-validation</small></h3>
+                    <div class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Acc</th>
+                                    <th>Prec</th>
+                                    <th>Recall</th>
+                                    <th>F1</th>
+                                    <th>AUC</th>
+                                </tr>
+                            </thead>
+                            <tbody>{% for r in comparison %}
+                                <tr>
+                                    <td>{{ r.Model }}</td>
+                                    <td>{{ r.Accuracy }}</td>
+                                    <td>{{ r.Precision }}</td>
+                                    <td>{{ r.Recall }}</td>
+                                    <td>{{ r.F1 }}</td>
+                                    <td>{{ r.ROC_AUC }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="glass pad">
+                    <h3>Confusion matrix <small>test set</small></h3>
+                    <div class="cm">
+                        <div class="good"><b>{{ m.confusion.tn }}</b>True negative</div>
+                        <div class="bad"><b>{{ m.confusion.fp }}</b>False alarm</div>
+                        <div class="bad"><b>{{ m.confusion.fn }}</b>Missed case</div>
+                        <div class="good"><b>{{ m.confusion.tp }}</b>True positive</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="wrap reveal" id="insights">
+            <div class="sec-head">
+                <p class="num">03 / INSIGHTS</p>
+                <h2>What drives the prediction?</h2>
+                <p>Feature importance from the final model, and Mann-Whitney U tests between diabetic and non-diabetic
+                    groups.</p>
+            </div>
+            <div class="two">
+                <div class="glass pad">
+                    <h3>Feature importance</h3>
+                    {% for f in m.importance %}
+                    <div class="bar-row"><span>{{ f.feature }}</span>
+                        <div class="bar"><i style="width:{{ f.value|round(1) }}%"></i></div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="glass pad">
+                    <h3>Statistical tests <small>Mann-Whitney U</small></h3>
+                    <div class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Median (D)</th>
+                                    <th>Median (ND)</th>
+                                    <th>p-value</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>{% for r in stats %}
+                                <tr>
+                                    <td>{{ r.Feature }}</td>
+                                    <td>{{ r.Median_Diabetic|round(1) }}</td>
+                                    <td>{{ r.Median_NonDiabetic|round(1) }}</td>
+                                    <td>{{ "%.1e"|format(r.p_value) }}</td>
+                                    <td><span class="chip {{ 'yes' if r.Significant else 'no' }}">{{ 'significant' if
+                                            r.Significant else 'not sig.' }}</span></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="tiny">D = diabetic, ND = non-diabetic. Significant means p &lt; 0.05.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="wrap">
+        <div>Made by <b>Prakhar Tiwari</b> · Enrollment No. <b>S25CSEU0996</b></div>
+        <div>Educational project, not a medical diagnosis.</div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>
